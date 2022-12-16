@@ -173,17 +173,17 @@ function playerCollisions() {
 	const result = worldOctree.capsuleIntersect( playerCollider );
 
 	playerOnFloor = false;
-
 	if ( result ) {
-
 		playerOnFloor = result.normal.y > 0;
-
+        //console.log(result.normal)
 		if ( ! playerOnFloor ) {
+	        //console.log(result.normal)
 
 			playerVelocity.addScaledVector( result.normal, - result.normal.dot( playerVelocity ) );
+			//alert("发生碰撞,游戏重新开始")
+			//location.reload()
 
 		}
-
 		playerCollider.translate( result.normal.multiplyScalar( result.depth ) );
 
 	}
@@ -384,7 +384,6 @@ function controls( deltaTime ) {
 const loader = new GLTFLoader();
 loader.load( 'collision-world.glb', ( gltf ) => {
 	scene.add( gltf.scene);
-	console.log("loader")
 	worldOctree.fromGraphNode( gltf.scene );
 	
 	gltf.scene.traverse( child => {

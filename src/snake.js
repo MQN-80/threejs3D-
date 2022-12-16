@@ -12,10 +12,12 @@ class snake{
         const sphere = new THREE.Mesh( this.sphereGeometry, this.sphereMaterial );
         this.length=0   //代表蛇的长度,从0开始,0下标代表蛇头,length下标代表蛇尾
         this.step=0.01  //设定每次前进的步幅,此处设定为0.01
+        //this.bodySet=new Set();
         sphere.castShadow = true;
 		sphere.receiveShadow = true;
         sphere.position.z-=1
         sphere.position.y-=1
+        //console.log(sphere.position.distanceToSquared(sphere.position))
         scene.add(sphere)
         this.snake_body.push(sphere)
         var i=0;
@@ -24,12 +26,15 @@ class snake{
         }   
 
     }
-    //蛇向前移动,原理为蛇头复制摄像机位置
+    /**
+     * 蛇向前移动,原理为蛇头复制摄像机位置
+     */
     forward(position){
-        //this.bodyMove();
+        this.isWall(position)
+        var mid=this.snake_body[0].position;
+        this.isCollision()
         this.snake_body[0].position.copy(position);
-
-        //this.bodyMove();
+        
     }
     /**
      * 在吃到食物时,蛇身长度+1,并往snake数组内添加一个球
@@ -54,6 +59,34 @@ class snake{
         for(;len>=1;len--){
             var prePosition=this.snake_body[len-1].position;
             this.snake_body[len].position.copy(prePosition);
+        }
+    }
+    /**
+     * 检测是否与蛇身碰撞
+     */
+    isCollision(){
+        var i=3;
+        var position=this.snake_body[0].position;
+        for(;i<=this.length;i++){
+            var nextPos=this.snake_body[i].position;
+            var distance=position.distanceToSquared(nextPos);
+            //25是半径乘半径
+            if(distance<0.01){
+                //alert("发生身体碰撞")
+                window.location.href='http://localhost:2000/result.html';
+            }
+
+        }
+    }
+    /**
+     * 检测是否与墙壁发生碰撞,实在不太好写，判断位置变化了
+     */
+    isWall(position){
+        var distance=this.snake_body[0].position.distanceToSquared(position)
+        if(distance<1e-6&&distance!=0)
+        {
+          // alert("撞墙死亡")
+           window.location.href='http://localhost:2000/result.html';
         }
     }
 }
