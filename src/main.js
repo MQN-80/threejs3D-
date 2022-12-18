@@ -11,38 +11,52 @@ import { Capsule } from '../build/jsm/math/Capsule.js';
 
 import { GUI } from '../build/jsm/libs/lil-gui.module.min.js';
 import snake from './snake.js';
+import Snow from './snow.js';
+import snowImg from "../assets/imgs/snow.png";
+
+/* === 初始化场景 === */
 const clock = new THREE.Clock();
 const scene = new THREE.Scene();
 var changeTime=0;
-scene.background = new THREE.Color( 0x88ccee );
+scene.background = new THREE.Color( 0x000000 );
 scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
+/* =================*/
+
 //实例化蛇对象
 const Snake=new snake(scene)
+
+//实例化雪花
+const snow = new Snow(10000, 100, snowImg)
+scene.add(snow.particle)
+
+/* ========== 相机 ========= */
+/* 第一人称相机 */
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.rotation.order = 'YXZ';
 
+
+/*=============================*/
+
+/* === 半球光源 === */
 const fillLight1 = new THREE.HemisphereLight( 0x4488bb, 0x002244, 0.5 );
 fillLight1.position.set( 2, 1, 1 );
 scene.add( fillLight1 );
 
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
-directionalLight.position.set( - 5, 25, - 1 );
-directionalLight.castShadow = true;
-directionalLight.shadow.camera.near = 0.01;
-directionalLight.shadow.camera.far = 500;
-directionalLight.shadow.camera.right = 30;
-directionalLight.shadow.camera.left = - 30;
-directionalLight.shadow.camera.top	= 30;
-directionalLight.shadow.camera.bottom = - 30;
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-directionalLight.shadow.radius = 4;
-directionalLight.shadow.bias = - 0.00006;
-scene.add( directionalLight );
+/* ==== 太阳光源，调用sun函数 ==== */
+let r = 0
+let sun = new Sun(7);
+let directionalLight = new THREE.DirectionalLight(0x263238, 0.5);
+directionalLight.position.set(0, 1, 0);
+scene.add(sun)
+/* =========  ========= */
 
+
+/* 网页容器 */
 const container = document.getElementById( 'container' );
 console.log(container)
+/* 渲染器 */
 const renderer = new THREE.WebGLRenderer( { antialias: true } );
+// /* ============= 渲染 部分 ============= */
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.shadowMap.enabled = true;
@@ -50,12 +64,14 @@ renderer.shadowMap.type = THREE.VSMShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 container.appendChild( renderer.domElement );
+/*===*/
 
 const stats = new Stats();
 stats.domElement.style.position = 'absolute';
 stats.domElement.style.top = '0px';
 container.appendChild( stats.domElement );
 
+/* ========宏常量======= */
 const GRAVITY = 30;
 
 const NUM_SPHERES = 100;
@@ -438,7 +454,48 @@ function teleportPlayerIfOob() {
 	}
 
 }
+
+
+/* ======太阳========*/
+function Sun(radius) {
+	var pointLight = {},
+		sun = {},
+		sunGeometry = {},
+		sunMaterial = {};
+
+	/* === 太阳网格 === */
+	sunGeometry = new THREE.SphereGeometry(radius, 10, 10);
+	sunMaterial = new THREE.MeshBasicMaterial({
+		color: 0xfdd835
+	});
+	sun = new THREE.Mesh(sunGeometry, sunMaterial);
+	sun.position.set(0, 25, 0);  //初始位置随意
+	/* ================ */
+
+	// /* ==== 点光源 ==== */ //无法产生阴影
+	pointLight = new THREE.PointLight(0xE65100, 4, 200);
+	pointLight.position.set(0, 0, 0);
+	pointLight.castShadow = true  //产生阴影
+	pointLight.shadow.mapSize.width = 2048
+	pointLight.shadow.mapSize.height = 2048
+	sun.add(pointLight);
+
+	// pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
+	// scene.add( pointLightHelper );
+
+	return sun;
+}
+
 function animate() {
+
+	/* ========天气 ===========*/
+	snow.snowing(0.3) // 下雪
+	/* == 太阳动画 == */
+	sun.position.x = Math.sin(r * 0.0155) * 50;
+	sun.position.y = Math.cos(r * 0.0155) * 50;
+	r += Math.PI / 180 * 2;
+	/* =============== */
+
 
 	const deltaTime = Math.min( 0.05, clock.getDelta() ) / STEPS_PER_FRAME;
 
