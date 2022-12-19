@@ -12,13 +12,11 @@ class FoodSet{
         this.foods=[]    //食物数组
     }
 
-
-
     setFood(num){
-        this.sphereGeometry = new THREE.IcosahedronGeometry( 0.5, 10 );
+        this.sphereGeometry = new THREE.TorusGeometry( 0.4, 0.2 ,10,20);
         this.sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xff00ff } );
         if(num==1){
-         var sphere1 = new THREE.Mesh( this.sphereGeometry, this.sphereMaterial );
+            var sphere1 = new THREE.Mesh( this.sphereGeometry, this.sphereMaterial );
             const foodlight1 = new THREE.PointLight(0xff00ff,1,3);
             sphere1.add(foodlight1);
             sphere1.castShadow = true;
@@ -103,6 +101,22 @@ class FoodSet{
             }
         }
         return false;
+    }
+
+    rotation() {
+
+/*
+        const sita = 0.4 * 0.01;
+        let matrix= new THREE.Matrix4().set(
+            Math.cos(sita),0,-Math.sin(sita),0,
+            0,1,0,0,
+            Math.sin(sita),0,Math.cos(sita),0,
+            0,0,0,1
+        )
+*/
+
+        this.foods[0].rotation.y += Math.PI/120
+        ;
     }
 }
 export default FoodSet
