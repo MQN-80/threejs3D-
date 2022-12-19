@@ -21,7 +21,7 @@ class snake{
         scene.add(sphere)
         this.snake_body.push(sphere)
         var i=0;
-        for(i=0;i<50;i++){
+        for(i=0;i<3;i++){
             this.addBody();
         }   
 
@@ -73,7 +73,7 @@ class snake{
             //25是半径乘半径
             if(distance<0.01){
                 //alert("发生身体碰撞")
-                window.location.href='http://localhost:2000/result.html';
+               window.location.href='http://localhost:2000/result.html';
             }
 
         }

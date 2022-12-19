@@ -13,6 +13,8 @@ import { GUI } from '../build/jsm/libs/lil-gui.module.min.js';
 import snake from './snake.js';
 import Snow from './snow.js';
 import snowImg from "../assets/imgs/snow.png";
+import FoodSet from "./FoodSet";
+import {randInt} from "three/src/math/MathUtils";
 
 /* === 初始化场景 === */
 const clock = new THREE.Clock();
@@ -28,6 +30,11 @@ const Snake=new snake(scene)
 //实例化雪花
 const snow = new Snow(10000, 100, snowImg)
 scene.add(snow.particle)
+
+//实例化食物
+const FOODSET =new FoodSet(scene);
+FOODSET.setFood(randInt(1,5));
+
 
 /* ========== 相机 ========= */
 /* 第一人称相机 */
@@ -137,11 +144,11 @@ container.addEventListener( 'mousedown', () => {
 
 } );
 
-document.addEventListener( 'mouseup', () => {
+/*document.addEventListener( 'mouseup', () => {
 
 	if ( document.pointerLockElement !== null ) throwBall();
 
-} );
+} );*/
 
 document.body.addEventListener( 'mousemove', ( event ) => {
 
@@ -165,6 +172,7 @@ function onWindowResize() {
 
 }
 
+/*
 function throwBall() {
 
 	const sphere = spheres[ sphereIdx ];
@@ -183,6 +191,7 @@ function throwBall() {
 	sphereIdx = ( sphereIdx + 1 ) % spheres.length;
 
 }
+*/
 
 function playerCollisions() {
 
@@ -385,6 +394,7 @@ function controls( deltaTime ) {
 
 	}
 
+/*
 	if ( playerOnFloor ) {
 
 		if ( keyStates[ 'Space' ] ) {
@@ -394,6 +404,7 @@ function controls( deltaTime ) {
 		}
 
 	}
+*/
 
 }
 
@@ -528,4 +539,9 @@ function animate() {
 	//保持一直向前运动
 	playerVelocity.add( getForwardVector().multiplyScalar( speedDelta*5 ) );
 
+	if(FOODSET.isEat(camera.position))
+	{
+		Snake.addBody();
+		FOODSET.setFood(randInt(1,5));
+	}
 }
