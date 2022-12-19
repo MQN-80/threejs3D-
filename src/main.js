@@ -544,4 +544,7 @@ function animate() {
 		Snake.addBody();
 		FOODSET.setFood(randInt(1,5));
 	}
+
+	//食物旋转
+	FOODSET.rotation();
 }
